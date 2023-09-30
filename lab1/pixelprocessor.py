@@ -4,26 +4,19 @@
 
 
 def IS_valid_pixels_list(pixels):
-    print("ERROR?")
-    print(type(pixels))
     if(type(pixels) is not list):
-        print("A")
         return False
     if(len(pixels)==0):
-        print("A")
         return False
     if(type(pixels[0][0]) is not int):
-        print("A")
         return False
     print("data is valid")
     return True
 
-def IS_whb(pixels):
-    print("ERROR?")
+def IS_BW(pixels):
     if(pixels[0][0] != pixels[0][1] or pixels[  0][0] != pixels[0][2]):
-        print("A")
         return False
-    print("data is Wh/B image")
+    print("data is B/W image")
     return True
 
 
@@ -41,8 +34,8 @@ def conv(pixels):
 
 # only for white black pixel set
 # returns histogram as list
-def histogram_whb(pixels):
-    if(not IS_valid_pixels_list(pixels) and not IS_whb(pixels)):
+def histogram_bw(pixels):
+    if(not IS_valid_pixels_list(pixels) and not IS_BW(pixels)):
         return
     
     histogram_counter = {i:0 for i in range(256)}
@@ -63,7 +56,7 @@ def probabilities_of_lightness(histogram):
 #t_opt - optimal treshold
 #obj_tone= 'bl' or 'wh'
 def mask(pixels, t_opt, obj_tone="bl"):
-    if(not IS_valid_pixels_list(pixels) and not IS_whb(pixels)):
+    if(not IS_valid_pixels_list(pixels) and not IS_BW(pixels)):
         return
 
     if(obj_tone=='bl'):
@@ -89,3 +82,14 @@ def img_from_mask(original_img_pixels, mask_pixels):
             new_original_img_pixels[i] = (255,255,255)
 
     return new_original_img_pixels
+
+
+def invert_greyscale(pixels):
+    if(not IS_valid_pixels_list(pixels) and not IS_BW(pixels)):
+        return
+    
+    print(pixels[:5])
+    for pixel in pixels:
+        pixel = (255-pixel[0], 255-pixel[0], 255-pixel[0])
+    print(pixels[:5])
+    return pixels
