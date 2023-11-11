@@ -1,9 +1,33 @@
 import numpy
 
-def create_filter_shift(right, bottom): #in case of left and top, use negative values
+def filter_shift(right, bottom): #in case of left and top, use negative values
     filter_shift = [[0] * (abs(right)*2+1) for _ in range(abs(bottom)*2+1)]
     filter_shift[abs(bottom)+bottom][abs(right)+right]=1
     return filter_shift
+
+def __palindrome(length):
+    set_val = []
+    for i in range(1, (length+1)// 2):
+        set_val.append(i)
+    if length % 2 == 0:
+        set_val.extend(reversed(set_val))
+    else:
+        set_val.append(length // 2 +1)
+        copy_rev = set_val.copy()
+        copy_rev.reverse()
+        set_val.extend(copy_rev[1:])
+    print(set_val)
+    return set_val
+
+def filter_gausian(width, height): # numpy a little bit was used
+    w = numpy.array(__palindrome(width))
+    h = numpy.array(__palindrome(height)).reshape(-1, 1)
+    
+    gaus_mat = numpy.dot(w.reshape(-1, 1), h.reshape(1, -1))
+    return gaus_mat
+
+def filter_inverse(size):
+    return [[0, 0, 0],[0, -1, 0],[0, 0, 0]]
 
 
 def apply_filter(img, filter):
@@ -11,7 +35,7 @@ def apply_filter(img, filter):
     green_pixels = [pixel[1] for pixel in img.getdata()]
     blue_pixels = [pixel[2] for pixel in img.getdata()]
 
-    # filtered_pixels_image = filters.apply_filter(pixels_img, filters.create_filter_shift(200, 300))
+    # filtered_pixels_image = filters.apply_filter(pixels_img, filters.filter_shift(200, 300))
     pixel_r_matrix = numpy.array(red_pixels).reshape(img.height, img.width)
     pixel_g_matrix = numpy.array(green_pixels).reshape(img.height, img.width)
     pixel_b_matrix = numpy.array(blue_pixels).reshape(img.height, img.width)
@@ -38,9 +62,9 @@ def __apply_filter_color(img, filter):
     filter_width = len(filter[0])
     filter_height = len(filter)
     init_point_x = int((filter_width - 1) / 2)
-    fin_point_x = int(img_width - (filter_width - 1) / 2 -1)
+    fin_point_x = int(img_width - filter_width - 1)
     init_point_y = int((filter_height - 1) / 2)
-    fin_point_y = int(img_height - (filter_height - 1) / 2 -1)
+    fin_point_y = int(img_height - filter_height - 1)
     normalisation_sum_of_filter = abs(numpy.sum(filter))
 
     
@@ -49,15 +73,7 @@ def __apply_filter_color(img, filter):
             pixel_val = 0
             for k in range(filter_height):
                 for l in range(filter_width):
-                    # print("col: ", col, "row: ", row, "k: ", k, "l: ", l)
                     pixel_val += img[row + l][col + k] * filter[l][k]
-                if(row==1 and col==1):
-                    print(pixel_val)
-            
-            # print(img[col][row])   # Debug print
-            # print(int(abs(pixel_val / normalisation_sum_of_filter)))  # Debug print
-            # print(type(col), type(row), type(img[col][row]), type(img), type(int(abs(pixel_val / normalisation_sum_of_filter))) )
-            # print(img[col][:5])
             img[row][col] = int(pixel_val / normalisation_sum_of_filter)
     min_p = numpy.min(numpy.array(img))
     #shift
@@ -65,6 +81,5 @@ def __apply_filter_color(img, filter):
         for j in range(len(img[0])):
             img[i][j]+=abs(min_p)
     return img
-
 # filter_shift = create_filter_shift(10, 20)
 # print_filter(filter_shift)
