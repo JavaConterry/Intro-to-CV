@@ -29,6 +29,16 @@ def filter_gausian(width, height): # numpy a little bit was used
 def filter_inverse(size):
     return [[0, 0, 0],[0, -1, 0],[0, 0, 0]]
 
+def filter_diagonal_movement(width, height):
+    filter = [[0]*height for i in range(width)]
+    for i in range(height):
+        for j in range(width):
+            if(i==j): filter[i][j]=1
+    return filter
+
+def filter_sharpening():
+    return [[0,-1,0],[-1,5,-1],[0,-1,0]]
+
 
 def apply_filter(img, filter):
     red_pixels = [pixel[0] for pixel in img.getdata()]
@@ -76,6 +86,7 @@ def __apply_filter_color(img, filter):
                     pixel_val += img[row + l][col + k] * filter[l][k]
             img[row][col] = int(pixel_val / normalisation_sum_of_filter)
     min_p = numpy.min(numpy.array(img))
+    print(min_p)
     #shift
     for i in range(len(img)):
         for j in range(len(img[0])):
