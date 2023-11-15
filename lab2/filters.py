@@ -72,11 +72,11 @@ def __filter_grad_magnitude(img):
     img_magn = img.copy()
     for i in range(len(img_magn)):
         for j in range(len(img_magn[0])):
-            img_magn[i][j] = math.sqrt(math.pow(img_gaus_dx[i][j], 2)+math.pow(img_gaus_dy[i][j], 2))
+            img_magn[i][j] = math.sqrt(
+                math.pow(img_gaus_dx[i][j], 2)+math.pow(img_gaus_dy[i][j], 2))
     return img_magn
 
 
-# =================just apply on colors the filter================================================================================================================================
 def apply_filter_grad_magnitude(img):
     red_pixels = [pixel[0] for pixel in img.getdata()]
     green_pixels = [pixel[1] for pixel in img.getdata()]
@@ -99,10 +99,6 @@ def apply_filter_grad_magnitude(img):
         pixel_r_list, pixel_g_list, pixel_b_list)]
     return result_img
 
-# ===============================================================================================================================================================
-
-
-    
 
 def apply_filter(img, filter):
     red_pixels = [pixel[0] for pixel in img.getdata()]
@@ -156,6 +152,32 @@ def __clip(img):
     return m
 
 
+def __extend_img_by_zeros(img, filter_size):
+    img_h, img_w = len(img), len(img[0])
+    filter_h, filter_w = filter_size
+    extend_height = filter_h - 1
+    extend_width = filter_w - 1
+    extended_img = [[0] * (img_w + extend_width)
+                    for _ in range(img_h + extend_height)]
+
+    for i in range(img_h):
+        for j in range(img_w):
+            extended_img[i][j] = img[i][j]
+
+    return extended_img
+
+
+def __deextend_img(img, filter_size):
+    filter_h, filter_w = filter_size
+    deextended_height = len(img) - filter_h + 1
+    deextended_width = len(img[0]) - filter_w + 1
+    deextended_img = [[0] * deextended_width for _ in range(deextended_height)]
+    for i in range(deextended_height):
+        for j in range(deextended_width):
+            deextended_img[i][j] = img[i][j]
+    return deextended_img
+
+
 def __apply_filter_color(img, filter):
     if (type(img[0][0]) == "tuple"):
         print("Error using 3 color image instead of 1")
@@ -165,11 +187,12 @@ def __apply_filter_color(img, filter):
     img_height = len(img)
     filter_width = len(filter[0])
     filter_height = len(filter)
-    init_point_x = int((filter_width - 1) / 2)
-    fin_point_x = int(img_width - filter_width - 1)
-    init_point_y = int((filter_height - 1) / 2)
-    fin_point_y = int(img_height - filter_height - 1)
+    init_point_x = int((filter_width - 1) / 2 - 1)
+    fin_point_x = int(img_width)
+    init_point_y = int((filter_height - 1) / 2 - 1)
+    fin_point_y = int(img_height)
     normalisation_sum_of_filter = abs(numpy.sum(filter))
+    img = __extend_img_by_zeros(img, (filter_height, filter_width))
 
     for row in range(init_point_y, fin_point_y):
         for col in range(init_point_x, fin_point_x):
@@ -195,4 +218,5 @@ def __apply_filter_color(img, filter):
     # print("After scaling and shifting")
     # print(min_p, " ", max_p)  #    <-------img after process requires a Histogram equalization. Its not made on a course yet.
     img = __clip(img)
+    img = __deextend_img(img, (filter_height, filter_width))
     return img
