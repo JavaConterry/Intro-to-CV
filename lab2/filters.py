@@ -1,12 +1,9 @@
 import numpy
 import random
 import math
+# from numba import njit
 
 
-def filter_shift(right, bottom):  # in case of left and top, use negative values
-    filter_shift = [[0] * (abs(right)*2+1) for _ in range(abs(bottom)*2+1)]
-    filter_shift[abs(bottom)+bottom][abs(right)+right] = 1
-    return filter_shift
 
 
 def __palindrome(length):
@@ -22,6 +19,11 @@ def __palindrome(length):
         set_val.extend(copy_rev[1:])
     print(set_val)
     return set_val
+
+def filter_shift(right, bottom):  # in case of left and top, use negative values
+    filter_shift = numpy.zeros((right, bottom))
+    filter_shift[right-1, bottom-1] = 1
+    return filter_shift
 
 
 def filter_gausian(width, height):  # numpy a little bit was used
@@ -100,6 +102,7 @@ def apply_filter_grad_magnitude(img):
     return result_img
 
 
+# @njit(nogil=True)
 def apply_filter(img, filter):
     red_pixels = [pixel[0] for pixel in img.getdata()]
     green_pixels = [pixel[1] for pixel in img.getdata()]
@@ -199,7 +202,7 @@ def __apply_filter_color(img, filter):
             pixel_val = 0
             for k in range(filter_height):
                 for l in range(filter_width):
-                    pixel_val += img[row + l][col + k] * filter[l][k]
+                    pixel_val += img[row + k][col + l] * filter[k][l] #l, k => k, l
             if (normalisation_sum_of_filter != 0):
                 img[row][col] = int(pixel_val / normalisation_sum_of_filter)
             else:

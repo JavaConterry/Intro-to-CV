@@ -2,7 +2,7 @@
 
 <b> Filtering of images </b>
 In this lab implemented image filtering on such solutions:
-- [ ]  Shift the image by 10 pixels to the right and 20 pixels down.
+- [x]  Shift the image by 10 pixels to the right and 20 pixels down.
 - [x]  Inversion.
 - [x]  Gaussian smoothing (filter size at least 11x11).
 - [x]  Diagonal motion blur (filter size at least 7x7).
