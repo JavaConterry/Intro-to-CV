@@ -34,7 +34,7 @@ def filter_gausian(width, height):  # numpy a little bit was used
     return gaus_mat
 
 
-def filter_inverse(size):
+def filter_inverse():
     return [[0, 0, 0], [0, -1, 0], [0, 0, 0]]
 
 
@@ -190,9 +190,9 @@ def __apply_filter_color(img, filter):
     img_height = len(img)
     filter_width = len(filter[0])
     filter_height = len(filter)
-    init_point_x = int((filter_width - 1) / 2 - 1)
+    init_point_x = 0 #int((filter_width - 1) / 2 - 1)
     fin_point_x = int(img_width)
-    init_point_y = int((filter_height - 1) / 2 - 1)
+    init_point_y = 0 #int((filter_height - 1) / 2 - 1)
     fin_point_y = int(img_height)
     normalisation_sum_of_filter = abs(numpy.sum(filter))
     img = __extend_img_by_zeros(img, (filter_height, filter_width))
@@ -207,19 +207,12 @@ def __apply_filter_color(img, filter):
                 img[row][col] = int(pixel_val / normalisation_sum_of_filter)
             else:
                 img[row][col] = int(pixel_val)
-    # scaling
-    # min_p = numpy.min(numpy.array(img))
-    # max_p = numpy.max(numpy.array(img))
-    # print("Before scaling and shifting")
-    # print(min_p, " ", max_p)
-    # img = __rescale(img, min_p, max_p)
-    # #shifting
-    # min_p = numpy.min(numpy.array(img))
-    # img = __shift(img, min_p)
-    # min_p = numpy.min(numpy.array(img))
-    # max_p = numpy.max(numpy.array(img))
-    # print("After scaling and shifting")
-    # print(min_p, " ", max_p)  #    <-------img after process requires a Histogram equalization. Its not made on a course yet.
+
+    min_p = numpy.min(numpy.array(img))
+    max_p = numpy.max(numpy.array(img))
+    print("minp: ", min_p, " maxp: ", max_p)
+    if not (min_p<=-255 and max_p>=255):
+        img = __shift(img, min_p)
     img = __clip(img)
     img = __deextend_img(img, (filter_height, filter_width))
     return img
