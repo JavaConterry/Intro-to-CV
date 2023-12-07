@@ -4,15 +4,15 @@ import numpy as np
 def apply(img_pixel_matrix, structure_element, operation):
     img_pixel_matrix = np.where(img_pixel_matrix == 255, 0, 1)
 
-    filtered_pixels_image = __apply_operator(img_pixel_matrix, structure_element, operation)
+    filtered_pixels_image = __apply_operator(
+        img_pixel_matrix, structure_element, operation)
 
     filtered_pixels_image = np.where(filtered_pixels_image == 1, 0, 255)
 
     return filtered_pixels_image
 
 
-
-### Defining wheather it is HIT FIT or MISS
+# Defining wheather it is HIT FIT or MISS
 def detect_pattern(pixel_mat, structure_matrix):
     b = structure_matrix
     sum_b = np.sum(b)
@@ -23,7 +23,8 @@ def detect_pattern(pixel_mat, structure_matrix):
                 counter += 1
     if (counter == sum_b):
         return "FIT"
-    elif(counter>0):
+    elif (counter > 0):
+        print("HIT")
         return "HIT"
     else:
         return "MISS"
@@ -37,18 +38,19 @@ def erosion(pixel_mat, structure_matrix):
 
 # operation
 def dilation(pixel_mat, structure_matrix):
-    return 1 if detect_pattern(pixel_mat, structure_matrix) == "HIT" else 0
+    return 1 if detect_pattern(pixel_mat, structure_matrix) != "MISS" else 0
 
 # operation
+
+
 def opening():
     return
 
 # operation
+
+
 def closing():
     return
-
-
-
 
 
 # structure element is a tuple (B, S)
@@ -62,22 +64,24 @@ def __apply_operator(digital_image, structure_element, operation):
         print("Not valid structure element")
         return
 
-    if(operation.__name__ != "opening" and operation.__name__ != "closing"):
+    if (operation.__name__ != "opening" and operation.__name__ != "closing"):
         sample = digital_image.copy()
         res_image = sample.copy()
         b, s = structure_element[0], structure_element[1]
         for row in range(len(res_image)-len(b)):
             for col in range(len(res_image[0]) - len(b[0])):
-                print("old res")
-                print(res_image[row:row+len(b),col:col+len(b[0])])
-                res_image[row+s[0]][col+s[1]] = operation(sample[row:row+len(b),col:col+len(b[0])],   b)
-                print("new res")
-                print(res_image[row:row+len(b),col:col+len(b[0])])
-    elif(operation.__name__ == "opening"):
-        img_after_dilation = __apply_operator(digital_image, structure_element, dilation)
-        res_image = __apply_operator(img_after_dilation, structure_element, erosion)
-    elif(operation.__name__ == "closing"):
-        img_after_erosion = __apply_operator(digital_image, structure_element, erosion)
-        res_image = __apply_operator(img_after_erosion, structure_element, dilation)
+                res_image[row+s[0]][col+s[1]
+                                    ] = operation(sample[row:row+len(b), col:col+len(b[0])],   b)
+
+    elif (operation.__name__ == "opening"):
+        img_after_dilation = __apply_operator(
+            digital_image, structure_element, dilation)
+        res_image = __apply_operator(
+            img_after_dilation, structure_element, erosion)
+    elif (operation.__name__ == "closing"):
+        img_after_erosion = __apply_operator(
+            digital_image, structure_element, erosion)
+        res_image = __apply_operator(
+            img_after_erosion, structure_element, dilation)
 
     return res_image
