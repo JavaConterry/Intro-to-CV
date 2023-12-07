@@ -50,6 +50,6 @@ structure_element = (np.array([[1, 1, 1],
 # Apply dilation using the script
 result = apply(binary_image, structure_element, dilation)
 
+```
 
-#Example:
-<img src="imgs/pixel_img.png" alt="Initial" width="200"/><img src="results/erosion.png" alt="Erosion" width="200"/> <img src="results/dilation.png" alt="Dilation" width="200"/> <img src="results/opening.png" alt="Opening" width="200"/> <img src="results/closing.png" alt="Closing" width="200"/>
+<img src="imgs/pixel_img.png" alt="Initial" width="200"/><img src="results/erosion.PNG" alt="Erosion" width="200"/> <img src="results/dilation.PNG" alt="Dilation" width="200"/> <img src="results/opening.PNG" alt="Opening" width="200"/> <img src="results/closing.PNG" alt="Closing" width="200"/>
