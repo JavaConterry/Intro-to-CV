@@ -11,8 +11,9 @@ def apply(img_pixel_matrix, structure_element, operation):
     return filtered_pixels_image
 
 
-# operation
-def erosion(pixel_mat, structure_matrix):
+
+### Defining wheather it is HIT FIT or MISS
+def detect_pattern(pixel_mat, structure_matrix):
     b = structure_matrix
     sum_b = np.sum(b)
     counter = 0
@@ -21,35 +22,62 @@ def erosion(pixel_mat, structure_matrix):
             if (pixel_mat[i][j] == b[i][j] == 1):
                 counter += 1
     if (counter == sum_b):
-        return True
-    return False
+        return "FIT"
+    elif(counter>0):
+        return "HIT"
+    else:
+        return "MISS"
+    return
+
+
+# operation
+def erosion(pixel_mat, structure_matrix):
+    return 1 if detect_pattern(pixel_mat, structure_matrix) == "FIT" else 0
 
 
 # operation
 def dilation(pixel_mat, structure_matrix):
-    # code
-    return False
+    return 1 if detect_pattern(pixel_mat, structure_matrix) == "HIT" else 0
+
+# operation
+def opening():
+    return
+
+# operation
+def closing():
+    return
 
 
-###############################################################################################################
+
+
 
 # structure element is a tuple (B, S)
 #              where: B - structure element matrix/binary digital image
 #                     S - spetial point of structure element (x, y)
-# def __apply_operator(digital_image, structure_element, operation):
-#     if (type(digital_image[0][0]) == "tuple"):
-#         print("Error using 3 color image instead of 1")
-#         return
-#     if (type(structure_element) != tuple):
-#         print("Not valid structure element. Check if type of the provided structure element is tuple")
-#         return
-#     sample = digital_image.copy()
-#     res_image = np.zeros((len(sample), len(sample[0])))
-#     b, s = structure_element[0], structure_element[1]
-#     for row in range(len(res_image)-len(b)):
-#         for col in range(len(res_image[0]) - len(b[0])):
-#             res_image[row+s[0]][col+s[1]] = int( operation(sample[row:row+len(b),col:col+len(b[0])],   b) )
-    
-#     return res_image
+def __apply_operator(digital_image, structure_element, operation):
+    if (type(digital_image[0][0]) == "tuple"):
+        print("Error using 3 color space image instead of binary")
+        return
+    if (type(structure_element) != tuple):
+        print("Not valid structure element")
+        return
 
-####################################### It was a beautiful idea but no. #########################################
+    if(operation.__name__ != "opening" and operation.__name__ != "closing"):
+        sample = digital_image.copy()
+        res_image = sample.copy()
+        b, s = structure_element[0], structure_element[1]
+        for row in range(len(res_image)-len(b)):
+            for col in range(len(res_image[0]) - len(b[0])):
+                print("old res")
+                print(res_image[row:row+len(b),col:col+len(b[0])])
+                res_image[row+s[0]][col+s[1]] = operation(sample[row:row+len(b),col:col+len(b[0])],   b)
+                print("new res")
+                print(res_image[row:row+len(b),col:col+len(b[0])])
+    elif(operation.__name__ == "opening"):
+        img_after_dilation = __apply_operator(digital_image, structure_element, dilation)
+        res_image = __apply_operator(img_after_dilation, structure_element, erosion)
+    elif(operation.__name__ == "closing"):
+        img_after_erosion = __apply_operator(digital_image, structure_element, erosion)
+        res_image = __apply_operator(img_after_erosion, structure_element, dilation)
+
+    return res_image
